@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Auto Skip</title>
+    <style>
+        /* ---------- RESET & BASE ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 240px;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f4f6fb;
+            color: #2c2c3a;
+            line-height: 1.4;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ---------- SOFT BLURRED BLOBS (glass feel) ---------- */
+        .bg-blobs {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-blobs::before,
+        .bg-blobs::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(45px);
+            opacity: 0.55;
+        }
+
+        .bg-blobs::before {
+            width: 140px;
+            height: 140px;
+            background: #a5d8ff;   /* soft blue */
+            top: -50px;
+            right: -40px;
+        }
+
+        .bg-blobs::after {
+            width: 130px;
+            height: 130px;
+            background: #ffc9de;   /* soft pink */
+            bottom: -50px;
+            left: -40px;
+        }
+
+        /* keep content above blobs */
+        h2, #status, #toggleButton {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ---------- TITLE ---------- */
+        h2 {
+            font-size: 1.15rem;
+            font-weight: 650;
+            color: #1e1e2f;
+            letter-spacing: -0.2px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2::before {
+            content: "▶";
+            font-size: 0.7rem;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff6b8b, #ff8e9e);
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(255, 107, 139, 0.35);
+            padding-left: 2px;
+        }
+
+        /* ---------- STATUS PILL ---------- */
+        #status {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: #3a4a5a;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 8px 12px;
+            border-radius: 40px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(160, 170, 200, 0.12);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+        }
+
+        #status::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3ecf8e;
+            box-shadow: 0 0 0 3px rgba(62, 207, 142, 0.2);
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        #status.disabled {
+            color: #7a8699;
+        }
+        #status.disabled::before {
+            background: #f87171;
+            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
+        }
+
+        /* ---------- BUTTON ---------- */
+        #toggleButton {
+            width: 100%;
+            padding: 11px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: inherit;
+            letter-spacing: 0.3px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 40px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #2c3e50;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+            box-shadow: 0 4px 14px rgba(160, 170, 200, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            outline: none;
+        }
+
+        #toggleButton:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(160, 170, 200, 0.28);
+            color: #c9184a;
+        }
+
+        #toggleButton:active {
+            transform: translateY(0) scale(0.98);
+            box-shadow: 0 2px 8px rgba(160, 170, 200, 0.2);
+        }
+
+        #toggleButton:focus-visible {
+            border-color: #ffb3c1;
+            box-shadow: 0 0 0 3px rgba(255, 107, 139, 0.25);
+        }
+
+        #toggleButton.enable-state {
+            color: #1e7a4a;
+        }
+        #toggleButton.enable-state:hover {
+            color: #0f5c36;
+        }
+
+        #toggleButton::before {
+            content: "⏸";
+            font-size: 0.85rem;
+            line-height: 1;
+            opacity: 0.75;
+            transition: transform 0.2s ease;
+        }
+
+        #toggleButton:hover::before {
+            transform: scale(1.1);
+        }
+
+        #toggleButton.enable-state::before {
+            content: "▶";
+            font-size: 0.75rem;
+        }
+
+        html, body {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- decorative blurred blobs -->
+    <div class="bg-blobs"></div>
+
+    <h2>YouTube Auto Skip</h2>
+
+    <p id="status">Extension is active</p>
+
+    <button id="toggleButton">Disable</button>
+
+    <script>
+        (function () {
+            const toggleBtn = document.getElementById('toggleButton');
+            const statusEl = document.getElementById('status');
+
+            let isEnabled = true;
+
+            function updateUI() {
+                if (isEnabled) {
+                    statusEl.textContent = 'Extension is active';
+                    statusEl.classList.remove('disabled');
+                    toggleBtn.textContent = 'Disable';
+                    toggleBtn.classList.remove('enable-state');
+                } else {
+                    statusEl.textContent = 'Extension is disabled';
+                    statusEl.classList.add('disabled');
+                    toggleBtn.textContent = 'Enable';
+                    toggleBtn.classList.add('enable-state');
+                }
+            }
+
+            updateUI();
+
+            toggleBtn.addEventListener('click', () => {
+                isEnabled = !isEnabled;
+                updateUI();
+                // Real extension: chrome.runtime.sendMessage({ enabled: isEnabled });
+            });
+        })();
+    </script>
+</body>
+</html>
