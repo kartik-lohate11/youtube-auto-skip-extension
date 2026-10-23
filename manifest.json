@@ -1,13 +1,20 @@
 {
   "manifest_version": 3,
   "name": "YouTube Auto Skip",
-  "version": "1.0.0",
-  "description": "Automatically skips eligible YouTube ad skip prompts.",
-  "permissions": [],
+  "version": "1.1.0",
+  "description": "Automatically skips, speeds through, and silences YouTube ads seamlessly.",
+  "permissions": [
+    "storage"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "content_scripts": [
     {
       "matches": [
-        "https://www.youtube.com/*"
+        "*://*.youtube.com/*"
       ],
       "js": [
         "content.js"
@@ -16,6 +23,11 @@
     }
   ],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   }
 }

@@ -1,245 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Auto Skip</title>
-    <style>
-        /* ---------- RESET & BASE ---------- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            width: 240px;
-            padding: 16px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f4f6fb;
-            color: #2c2c3a;
-            line-height: 1.4;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* ---------- SOFT BLURRED BLOBS (glass feel) ---------- */
-        .bg-blobs {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .bg-blobs::before,
-        .bg-blobs::after {
-            content: "";
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(45px);
-            opacity: 0.55;
-        }
-
-        .bg-blobs::before {
-            width: 140px;
-            height: 140px;
-            background: #a5d8ff;   /* soft blue */
-            top: -50px;
-            right: -40px;
-        }
-
-        .bg-blobs::after {
-            width: 130px;
-            height: 130px;
-            background: #ffc9de;   /* soft pink */
-            bottom: -50px;
-            left: -40px;
-        }
-
-        /* keep content above blobs */
-        h2, #status, #toggleButton {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ---------- TITLE ---------- */
-        h2 {
-            font-size: 1.15rem;
-            font-weight: 650;
-            color: #1e1e2f;
-            letter-spacing: -0.2px;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        h2::before {
-            content: "▶";
-            font-size: 0.7rem;
-            color: #ffffff;
-            background: linear-gradient(135deg, #ff6b8b, #ff8e9e);
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            box-shadow: 0 3px 8px rgba(255, 107, 139, 0.35);
-            padding-left: 2px;
-        }
-
-        /* ---------- STATUS PILL ---------- */
-        #status {
-            font-size: 0.78rem;
-            font-weight: 500;
-            color: #3a4a5a;
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 8px 12px;
-            border-radius: 40px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 12px rgba(160, 170, 200, 0.12);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.25s ease;
-        }
-
-        #status::before {
-            content: "";
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #3ecf8e;
-            box-shadow: 0 0 0 3px rgba(62, 207, 142, 0.2);
-            transition: all 0.25s ease;
-            flex-shrink: 0;
-        }
-
-        #status.disabled {
-            color: #7a8699;
-        }
-        #status.disabled::before {
-            background: #f87171;
-            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18);
-        }
-
-        /* ---------- BUTTON ---------- */
-        #toggleButton {
-            width: 100%;
-            padding: 11px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            font-family: inherit;
-            letter-spacing: 0.3px;
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            border-radius: 40px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: #2c3e50;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
-            box-shadow: 0 4px 14px rgba(160, 170, 200, 0.18);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            outline: none;
-        }
-
-        #toggleButton:hover {
-            background: rgba(255, 255, 255, 0.95);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(160, 170, 200, 0.28);
-            color: #c9184a;
-        }
-
-        #toggleButton:active {
-            transform: translateY(0) scale(0.98);
-            box-shadow: 0 2px 8px rgba(160, 170, 200, 0.2);
-        }
-
-        #toggleButton:focus-visible {
-            border-color: #ffb3c1;
-            box-shadow: 0 0 0 3px rgba(255, 107, 139, 0.25);
-        }
-
-        #toggleButton.enable-state {
-            color: #1e7a4a;
-        }
-        #toggleButton.enable-state:hover {
-            color: #0f5c36;
-        }
-
-        #toggleButton::before {
-            content: "⏸";
-            font-size: 0.85rem;
-            line-height: 1;
-            opacity: 0.75;
-            transition: transform 0.2s ease;
-        }
-
-        #toggleButton:hover::before {
-            transform: scale(1.1);
-        }
-
-        #toggleButton.enable-state::before {
-            content: "▶";
-            font-size: 0.75rem;
-        }
-
-        html, body {
-            overflow: hidden;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="ambient-glow" id="ambientGlow"></div>
 
-    <!-- decorative blurred blobs -->
-    <div class="bg-blobs"></div>
+    <div class="content-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <div class="logo-badge">
+                    <svg viewBox="0 0 24 24">
+                        <!-- Fast-Forward / Skip Path -->
+                        <polygon points="4,5 13,12 4,19" />
+                        <polygon points="12,5 21,12 12,19" />
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>Auto Skip</h1>
+                    <span>YouTube Ad Eliminator</span>
+                </div>
+            </div>
+            <div class="version-pill">v1.1</div>
+        </header>
 
-    <h2>YouTube Auto Skip</h2>
+        <!-- Status Card with Master Switch -->
+        <div class="status-card" id="statusCard">
+            <div class="status-info">
+                <div class="status-dot" id="statusDot"></div>
+                <div>
+                    <div class="status-label" id="statusLabel">Active</div>
+                    <div class="status-sub" id="statusSub">Skipping detected ads</div>
+                </div>
+            </div>
+            <label class="switch" title="Toggle Auto-Skip">
+                <input type="checkbox" id="masterToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
 
-    <p id="status">Extension is active</p>
+        <!-- Options Group -->
+        <div class="options-group">
+            <div class="option-item">
+                <div class="option-desc">
+                    <span class="option-title">Instant Fast-Forward</span>
+                    <span class="option-hint">Skip unskippable & countdown ads</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="fastForwardToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="option-item">
+                <div class="option-desc">
+                    <span class="option-title">Silence Ad Audio</span>
+                    <span class="option-hint">Mute volume while ads play</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="autoMuteToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
 
-    <button id="toggleButton">Disable</button>
+        <!-- Stats Card -->
+        <div class="stats-card">
+            <div class="stats-left">
+                <span class="stats-title">Ads Blocked / Skipped</span>
+                <div class="stats-count">
+                    <span id="adsCount">0</span>
+                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">ads</span>
+                </div>
+            </div>
+            <button class="reset-stats-btn" id="resetStatsBtn" title="Reset Counter">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+            </button>
+        </div>
 
-    <script>
-        (function () {
-            const toggleBtn = document.getElementById('toggleButton');
-            const statusEl = document.getElementById('status');
+        <!-- Footer -->
+        <footer class="footer">
+            <span>Enjoy uninterrupted streaming</span>
+        </footer>
+    </div>
 
-            let isEnabled = true;
-
-            function updateUI() {
-                if (isEnabled) {
-                    statusEl.textContent = 'Extension is active';
-                    statusEl.classList.remove('disabled');
-                    toggleBtn.textContent = 'Disable';
-                    toggleBtn.classList.remove('enable-state');
-                } else {
-                    statusEl.textContent = 'Extension is disabled';
-                    statusEl.classList.add('disabled');
-                    toggleBtn.textContent = 'Enable';
-                    toggleBtn.classList.add('enable-state');
-                }
-            }
-
-            updateUI();
-
-            toggleBtn.addEventListener('click', () => {
-                isEnabled = !isEnabled;
-                updateUI();
-                // Real extension: chrome.runtime.sendMessage({ enabled: isEnabled });
-            });
-        })();
-    </script>
+    <!-- External Script (Manifest V3 CSP Compliant) -->
+    <script src="popup.js"></script>
 </body>
 </html>
