@@ -9,7 +9,7 @@
   [![Manifest V3](https://img.shields.io/badge/Manifest-V3-red.svg?style=for-the-badge&logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/intro/)
   [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
   [![Platform](https://img.shields.io/badge/Platform-Chromium%20%7C%20Edge%20%7C%20Brave-blue.svg?style=for-the-badge)](https://www.google.com/chrome/)
-  [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+
 
   <p align="center">
     <a href="#-key-features">Features</a> •
@@ -192,11 +192,6 @@ Contributions, bug reports, and feature suggestions are welcome!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
----
-
-## 📄 License
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
 
 <div align="center">
   <sub>Built with ❤️ for a distraction-free YouTube experience.</sub>
