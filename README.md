@@ -112,7 +112,7 @@ Look for the **Developer mode** toggle switch in the top-right corner and turn i
 1. Click the **Load unpacked** button in the top-left corner.
 2. Select the extension directory:
    ```
-   d:\KARTIK LOHATE\New Project Section\youtube-add-skip-extension
+   Select the extension directory where you cloned or extracted the project folder.
    ```
 3. The extension card **"YouTube Auto Skip"** will appear in your extension list!
 
